@@ -51,7 +51,7 @@ export default function ScreenSettings({ goBack }: any) {
             <View className="flex-row items-center gap-4 p-4">
               <MaterialIcons name="logout" size={24} color="#ef4444" />
               <View className="w-full">
-                <Text className="text-base font-semibold text-red-500">Termos e condições</Text>
+                <Text className="text-base font-semibold text-red-500">Sair da conta</Text>
                 <Text className="text-sm font-normal text-red-400">Desconectar do dispositivo</Text>
               </View>
             </View>
