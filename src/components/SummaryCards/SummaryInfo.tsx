@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, Text, Image, ImageSourcePropType } from 'react-native';
 
 export default function WrapperSummaryInfo() {
   return (
@@ -19,14 +19,14 @@ export function SummaryCard({
   data,
 }: {
   title: string;
-  imageUrl: string;
+  imageUrl: ImageSourcePropType;
   data: number | string;
 }) {
   return (
     <View className="flex-1 rounded-xl bg-white p-4 shadow">
       <View className="flex-row items-center justify-between">
         <View className="h-9 w-9 items-center justify-center rounded-xl bg-orange-600/10">
-          <Text>{imageUrl}</Text>
+          <Image source={imageUrl} />
         </View>
         <Text className="text-sm font-bold text-emerald-500">+12%</Text>
       </View>
