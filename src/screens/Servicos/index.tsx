@@ -14,11 +14,18 @@ export default function ScreenServicos() {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('todos');
 
+  // ======================================================
+  // LOAD SERVICES
+  // ======================================================
   async function loadServices() {
     try {
       setLoading(true);
+
       const data = await getService();
-      setServices(data?.agendamento || []);
+
+      console.log('SERVICES:', data);
+
+      setServices(data || []);
     } catch (error) {
       console.log('Erro ao buscar serviços:', error);
     } finally {
@@ -26,16 +33,25 @@ export default function ScreenServicos() {
     }
   }
 
+  // ======================================================
+  // INIT
+  // ======================================================
   useEffect(() => {
     loadServices();
   }, []);
 
+  // ======================================================
+  // RELOAD AO FOCAR
+  // ======================================================
   useFocusEffect(
     useCallback(() => {
       loadServices();
     }, [])
   );
 
+  // ======================================================
+  // NORMALIZAR TEXTO
+  // ======================================================
   const normalize = (text: string) =>
     text
       .toLowerCase()
@@ -43,47 +59,67 @@ export default function ScreenServicos() {
       .replace(/[\u0300-\u036f]/g, '')
       .trim();
 
+  // ======================================================
+  // MAPA FILTROS
+  // ======================================================
   const filterMap: any = {
     banho: 'banho',
     tosa: 'tosa',
     banho_tosa: 'banho e tosa',
   };
 
-  
+  // ======================================================
+  // FILTRO BUSCA
+  // ======================================================
   const filteredBySearch = services.filter((s) => {
     const busca = normalize(search);
 
     return (
-      normalize(s?.nome || '').includes(busca) ||
-      normalize(s?.pet || '').includes(busca) ||
-      normalize(s?.servico || '').includes(busca)
+      normalize(s?.cliente?.nome || '').includes(busca) ||
+      normalize(s?.pet?.pet_name || '').includes(busca) ||
+      normalize(s?.servico?.nome || '').includes(busca)
     );
   });
 
-  
+  // ======================================================
+  // FILTRO FINAL
+  // ======================================================
   const finalServices = filteredBySearch
     .filter((s) => {
-     
-      if (s.status === 'finalizado') return false;
+      if (normalize(s?.status || '') === 'finalizado') {
+        return false;
+      }
 
-      if (filter === 'todos') return true;
+      if (filter === 'todos') {
+        return true;
+      }
 
-      return normalize(s?.servico || '') === filterMap[filter];
+      return normalize(s?.servico?.nome || '') === filterMap[filter];
     })
-    .sort((a, b) => normalize(a.pet).localeCompare(normalize(b.pet)));
+    .sort((a, b) =>
+      normalize(a?.pet?.pet_name || '').localeCompare(normalize(b?.pet?.pet_name || ''))
+    );
 
+  // ======================================================
+  // LOADING
+  // ======================================================
   if (loading) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center">
         <ActivityIndicator size="large" />
+
         <Text>Carregando serviços...</Text>
       </SafeAreaView>
     );
   }
 
+  // ======================================================
+  // RENDER
+  // ======================================================
   return (
     <SafeAreaView className="flex-1" edges={['top']}>
       <Header />
+
       <Text className="p-6 text-center text-3xl font-bold">Serviços</Text>
 
       <FilterInput
@@ -98,22 +134,25 @@ export default function ScreenServicos() {
           active={filter === 'todos'}
           onPress={() => setFilter('todos')}
         />
+
         <FilterButton
           title="Banho e Tosa"
           active={filter === 'banho_tosa'}
           onPress={() => setFilter('banho_tosa')}
         />
+
         <FilterButton
           title="Banho"
           active={filter === 'banho'}
           onPress={() => setFilter('banho')}
         />
+
         <FilterButton title="Tosa" active={filter === 'tosa'} onPress={() => setFilter('tosa')} />
       </View>
 
       <FlatList
         data={finalServices}
-        keyExtractor={(item: any) => item.id.toString()}
+        keyExtractor={(item: any) => item.id_agendamento.toString()}
         renderItem={({ item }: any) => (
           <CardServico item={item} reload={loadServices} currentFilter={filter} />
         )}

@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Text } from 'react-native';
 
 import Servicos from '@/screens/Servicos';
-// import Configuracoes from '@/screens/Configuracoes';
+import Configuracoes from '@/screens/Configuracoes';
 import Estoque from '@/screens/Estoques';
 
 const Tab = createBottomTabNavigator();
@@ -42,7 +42,7 @@ export default function Tabs() {
         }}
       />
 
-      {/*<Tab.Screen
+      <Tab.Screen
         name="Configuracoes"
         component={Configuracoes}
         options={{
@@ -53,7 +53,7 @@ export default function Tabs() {
             <Text style={{ color, fontWeight: focused ? 'bold' : 'normal' }}>Configuracoes</Text>
           ),
         }}
-      />*/}
+      />
     </Tab.Navigator>
   );
 }

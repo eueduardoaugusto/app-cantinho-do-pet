@@ -17,11 +17,12 @@ export async function login(email: string, password: string) {
 
   const data = response.data;
 
-  if (data.token) {
+  if (data.token && data.user) {
     await AsyncStorage.setItem('token', data.token);
+    await AsyncStorage.setItem('user', JSON.stringify(data.user));
   } else {
-    console.log('Token não veio da API', data);
-    throw new Error('Token não recebido');
+    console.log('Dados incompletos da API', data);
+    throw new Error('Token ou usuário não recebido');
   }
 
   return data;

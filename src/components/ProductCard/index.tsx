@@ -3,7 +3,7 @@ import { AppButton } from '@/components/Button/buttonLogin';
 import { sugerirCompra } from '@/services/product';
 
 export function CardEstoque({ item, currentFilter, reload }: any) {
-  const estoque = item.quantidade_estoque;
+  const estoque = item.quantidade;
   const textUn = estoque === 1 ? 'unidade' : 'unidades';
 
   const statusConfig: any = {

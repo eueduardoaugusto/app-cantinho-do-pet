@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export async function getProduct() {
   const token = await AsyncStorage.getItem('token');
 
-  const { data } = await api.get('/produtos', {
+  const { data } = await api.get('/produtos/', {
     headers: {
       Authorization: `Bearer ${token}`,
     },

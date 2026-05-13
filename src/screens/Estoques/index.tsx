@@ -8,6 +8,9 @@ import { getProduct } from '@/services/product';
 import { useState, useEffect, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 
+// ======================================================
+// NORMALIZAR TEXTO
+// ======================================================
 function normalize(text: string) {
   return text
     .toLowerCase()
@@ -21,10 +24,17 @@ export default function ScreenEstoque() {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('todos');
 
+  // ======================================================
+  // LOAD PRODUTOS
+  // ======================================================
   async function loadProducts() {
     try {
       setLoading(true);
+
       const data = await getProduct();
+
+      console.log('PRODUTOS:', data);
+
       setProdutos(data || []);
     } catch (error) {
       console.log('Erro ao buscar produtos:', error);
@@ -33,61 +43,82 @@ export default function ScreenEstoque() {
     }
   }
 
+  // ======================================================
+  // INIT
+  // ======================================================
   useEffect(() => {
     loadProducts();
   }, []);
 
+  // ======================================================
+  // RELOAD AO FOCAR
+  // ======================================================
   useFocusEffect(
     useCallback(() => {
       loadProducts();
     }, [])
   );
 
+  // ======================================================
+  // FILTRO BUSCA
+  // ======================================================
   const filteredBySearch = produtos.filter((p) =>
     normalize(p?.nome || '').includes(normalize(search))
   );
 
+  // ======================================================
+  // FILTRO FINAL
+  // ======================================================
   const finalProducts = filteredBySearch
+    .filter((p) => p?.servico !== 1)
     .filter((p) => {
-      const setor = normalize(p.setor || '');
+      const setor = normalize(p?.setor || '');
 
       if (filter === 'baixo') {
-        return p.quantidade_estoque <= p.quantidade_min && !p.sugerir_compra;
+        return p?.quantidade_estoque <= p?.quantidade_min && !p?.sugerir_compra;
       }
 
       if (filter === 'racoes') {
-        return setor === 'racao' && p.quantidade_estoque > 0;
+        return setor === 'racao' && p?.quantidade_estoque > 0;
       }
 
       if (filter === 'acessorios') {
-        return setor === 'acessorios' && p.quantidade_estoque > 0;
+        return setor === 'acessorios' && p?.quantidade_estoque > 0;
       }
 
       return true;
     })
     .sort((a, b) => {
-      const setorA = normalize(a.setor || '');
-      const setorB = normalize(b.setor || '');
+      const setorA = normalize(a?.setor || '');
+      const setorB = normalize(b?.setor || '');
 
       if (setorA !== setorB) {
         return setorA.localeCompare(setorB);
       }
 
-      return normalize(a.nome).localeCompare(normalize(b.nome));
+      return normalize(a?.nome || '').localeCompare(normalize(b?.nome || ''));
     });
 
+  // ======================================================
+  // LOADING
+  // ======================================================
   if (loading) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center">
         <ActivityIndicator size="large" />
+
         <Text>Carregando produtos...</Text>
       </SafeAreaView>
     );
   }
 
+  // ======================================================
+  // RENDER
+  // ======================================================
   return (
     <SafeAreaView className="flex-1" edges={['top']}>
       <Header />
+
       <Text className="p-6 text-center text-3xl font-bold">Estoque</Text>
 
       <FilterInput placeholder="Pesquisar produtos..." value={search} onChangeText={setSearch} />
@@ -98,16 +129,19 @@ export default function ScreenEstoque() {
           active={filter === 'todos'}
           onPress={() => setFilter('todos')}
         />
+
         <FilterButton
           title="Rações"
           active={filter === 'racoes'}
           onPress={() => setFilter('racoes')}
         />
+
         <FilterButton
           title="Acessórios"
           active={filter === 'acessorios'}
           onPress={() => setFilter('acessorios')}
         />
+
         <FilterButton
           title="Enviar Alerta"
           active={filter === 'baixo'}
@@ -117,7 +151,7 @@ export default function ScreenEstoque() {
 
       <FlatList
         data={finalProducts}
-        keyExtractor={(item: any) => item.id.toString()}
+        keyExtractor={(item: any, index) => (item.id_produto || index).toString()}
         renderItem={({ item }: any) => (
           <CardEstoque item={item} currentFilter={filter} reload={loadProducts} />
         )}
