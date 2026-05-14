@@ -6,7 +6,7 @@ export async function getService() {
   return data.scheduling;
 }
 export async function updateServiceStatus(id: number, status: string) {
-  const { data } = await api.patch(`/scheduling/${id}/status`, {
+  const { data } = await api.patch(`/scheduling/status/${id}`, {
     status,
   });
 

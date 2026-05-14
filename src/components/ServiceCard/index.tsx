@@ -32,7 +32,7 @@ export function CardServico({ item, reload, currentFilter }: any) {
     if (!podeIniciar) return;
 
     try {
-      await updateServiceStatus(item.id_agendamento, 'Confirmado');
+      await updateServiceStatus(item.id_agendamento, 'confirmado');
 
       await reload();
     } catch (error) {
@@ -47,7 +47,7 @@ export function CardServico({ item, reload, currentFilter }: any) {
     if (!podeFinalizar) return;
 
     try {
-      await updateServiceStatus(item.id_agendamento, 'Finalizado');
+      await updateServiceStatus(item.id_agendamento, 'finalizado');
 
       await reload();
     } catch (error) {
