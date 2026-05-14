@@ -16,7 +16,6 @@ export default function ScreenSettings() {
 
   const [user, setUser] = useState<any>(null);
 
-  // 🔥 AGORA CARREGA SEMPRE QUE A TELA ENTRA EM FOCO
   useFocusEffect(
     useCallback(() => {
       async function loadUser() {
