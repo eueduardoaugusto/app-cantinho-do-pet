@@ -1,5 +1,7 @@
 import { api } from './api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios, { AxiosError } from 'axios';
+import { Alert } from 'react-native';
 
 export async function login(email: string, password: string) {
   const response = await api.post(
@@ -26,4 +28,30 @@ export async function login(email: string, password: string) {
   }
 
   return data;
+}
+
+export async function getAuthUserData() {
+  try {
+    const token = await AsyncStorage.getItem('token');
+
+    const { data } = await api.get('/auth/me', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return data;
+  } catch (error) {
+    let message = 'Erro desconhecido';
+
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<{ errors: string[] }>;
+
+      message = axiosError.response?.data?.errors?.[0] || axiosError.message;
+    } else if (error instanceof Error) {
+      message = error.message;
+    }
+
+    Alert.alert('Erro na busca dos dados do usuário', message);
+  }
 }
